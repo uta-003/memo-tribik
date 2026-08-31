@@ -1,0 +1,1060 @@
+/* ============================================================
+   Memo Pembayaran — component styles
+   ============================================================ */
+
+/* ---------- Grid informasi memo ---------- */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+
+/* ---------- Tabel rincian ---------- */
+.table-wrap {
+  overflow-x: auto;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 720px;
+}
+
+.items-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  background: #f8f9ff;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.items-table th:first-child {
+  border-top-left-radius: 10px;
+}
+
+.items-table th:last-child {
+  border-top-right-radius: 10px;
+}
+
+.items-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.items-table tbody tr:hover td {
+  background: #fafbff;
+}
+
+.th-no,
+.td-no {
+  width: 44px;
+  text-align: center;
+}
+
+.td-no {
+  color: var(--text-3);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.th-qty,
+.td-qty {
+  width: 84px;
+}
+
+.th-harga,
+.td-harga {
+  width: 172px;
+}
+
+.th-total,
+.td-total {
+  width: 150px;
+  text-align: right;
+}
+
+.th-aksi,
+.td-aksi {
+  width: 44px;
+  text-align: center;
+}
+
+.cell-input {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 8px;
+  height: 36px;
+  padding: 0 10px;
+  font-size: 14px;
+  color: var(--text-1);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.cell-input::placeholder {
+  color: #aab1c9;
+}
+
+.cell-input:hover {
+  border-color: var(--border-2);
+  background: #fff;
+}
+
+.cell-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(182, 0, 1, 0.12);
+}
+
+.cell-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.currency-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.currency-cell > span {
+  font-size: 12px;
+  color: var(--text-3);
+  font-weight: 600;
+  flex: none;
+}
+
+.td-total {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  padding-right: 12px;
+  white-space: nowrap;
+}
+
+.tfoot-label {
+  text-align: right;
+  font-weight: 700;
+  color: var(--text-2);
+  font-size: 13px;
+  padding: 12px;
+}
+
+.tfoot-value {
+  text-align: right;
+  font-weight: 800;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  padding: 12px;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.table-hint {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* ---------- Kartu ringkasan ---------- */
+.summary-card {
+  padding: 18px;
+}
+
+.summary-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--border-2);
+  margin-bottom: 14px;
+}
+
+.summary-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 16px -8px rgba(182, 0, 1, 0.55);
+  flex: none;
+}
+
+.summary-head h3 {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.summary-head p {
+  font-size: 11.5px;
+  color: var(--text-3);
+}
+
+.ppn-block {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ppn-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ppn-rate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ppn-rate input {
+  width: 54px;
+  height: 30px;
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  text-align: right;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  background: #fbfcff;
+}
+
+.ppn-rate input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(182, 0, 1, 0.12);
+}
+
+.ppn-rate span {
+  font-size: 12px;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #eef0f9;
+  padding: 4px;
+  border-radius: 11px;
+  gap: 4px;
+}
+
+.segmented button {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.segmented button.active {
+  background: #fff;
+  color: var(--primary);
+  box-shadow: 0 2px 6px rgba(23, 32, 58, 0.14);
+}
+
+/* ---------- Sakelar rincian PPN di PDF ---------- */
+.pdf-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+
+.pdf-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.pdf-toggle-track {
+  position: relative;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: #c9cfe6;
+  transition: background 0.15s ease;
+  flex: none;
+}
+
+.pdf-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(23, 32, 58, 0.25);
+  transition: transform 0.15s ease;
+}
+
+.pdf-toggle input:checked + .pdf-toggle-track {
+  background: var(--primary);
+}
+
+.pdf-toggle input:checked + .pdf-toggle-track .pdf-toggle-thumb {
+  transform: translateX(14px);
+}
+
+.pdf-toggle input:focus-visible + .pdf-toggle-track {
+  box-shadow: 0 0 0 3px rgba(182, 0, 1, 0.22);
+}
+
+.pdf-toggle-text {
+  line-height: 1.3;
+}
+
+.sum-rows {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.sum-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  font-size: 13.5px;
+}
+
+.sum-row .label {
+  color: var(--text-2);
+}
+
+.sum-row .value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sum-row.sub .label,
+.sum-row.sub .value {
+  font-size: 12.5px;
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.grand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #fff;
+  border-radius: 13px;
+  padding: 13px 16px;
+  box-shadow: 0 12px 22px -12px rgba(182, 0, 1, 0.65);
+  margin-bottom: 14px;
+}
+
+.grand span {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  opacity: 0.82;
+}
+
+.grand strong {
+  font-size: 21px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- DP & sisa pembayaran ---------- */
+.dp-block {
+  border-top: 1px dashed var(--border-2);
+  padding-top: 12px;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.dp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dp-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dp-controls select {
+  flex: 1;
+  height: 38px;
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 0 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-1);
+  background: #fbfcff;
+  cursor: pointer;
+}
+
+.dp-controls select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(182, 0, 1, 0.12);
+}
+
+.dp-custom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dp-custom input {
+  width: 60px;
+  height: 38px;
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  text-align: right;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  background: #fbfcff;
+}
+
+.dp-custom input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(182, 0, 1, 0.12);
+}
+
+.dp-custom span {
+  font-size: 12px;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.sisa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--green-soft);
+  border: 1px solid #c9f0dd;
+  color: var(--green);
+  border-radius: 12px;
+  padding: 11px 14px;
+}
+
+.sisa span {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sisa strong {
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------- Terbilang ---------- */
+.terbilang {
+  background: var(--primary-soft);
+  border: 1px dashed #f0c9c9;
+  border-radius: 12px;
+  padding: 11px 14px;
+}
+
+.terbilang-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.terbilang p {
+  font-size: 13px;
+  font-style: italic;
+  color: #7f0001;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.side-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 12px;
+  color: var(--text-3);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  line-height: 1.5;
+}
+
+.side-note svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* ---------- Tanda tangan ---------- */
+.signature-card {
+  padding: 20px;
+}
+
+.sig-date {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--text-2);
+  font-size: 13.5px;
+  margin-bottom: 14px;
+}
+
+.sig-city {
+  border: none;
+  border-bottom: 1px dashed var(--border-2);
+  background: transparent;
+  width: 10ch;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text-1);
+  text-align: center;
+  padding: 2px 4px;
+}
+
+.sig-city:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.signature-grid {
+  display: grid;
+  grid-template-columns: 0.78fr 1.11fr 1.11fr;
+  gap: 14px;
+}
+
+.sig-group {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  background: #fcfcff;
+  min-width: 0;
+}
+
+.sig-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.sig-pemohon {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.sig-mengetahui {
+  color: var(--amber);
+  background: var(--amber-soft);
+}
+
+.sig-menyetujui {
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.sig-members {
+  display: grid;
+  gap: 14px;
+}
+
+.sig-members.two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.sig-member {
+  text-align: center;
+  min-width: 0;
+}
+
+.sig-space {
+  height: 82px;
+  border: 1.5px dashed var(--border-2);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  color: #b3bacf;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.sig-space span {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sig-name,
+.sig-jabatan {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  text-align: center;
+  padding: 4px 6px;
+  font-family: inherit;
+  color: var(--text-1);
+}
+
+.sig-name {
+  font-weight: 700;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--border-2);
+}
+
+.sig-jabatan {
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.sig-name::placeholder,
+.sig-jabatan::placeholder {
+  color: #a7aec6;
+  font-weight: 500;
+}
+
+.sig-name:focus,
+.sig-jabatan:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ---------- Responsif ---------- */
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .col-side {
+    position: static;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .signature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-bar-inner {
+    flex-wrap: wrap;
+  }
+
+  .sig-members.two {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Cetak (A4) ---------- */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  body::before {
+    display: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .app-bar {
+    position: static;
+    background: #fff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .page {
+    padding-bottom: 0;
+  }
+
+  .layout {
+    display: block;
+    margin-top: 12px;
+  }
+
+  .col-main {
+    display: grid;
+    gap: 12px;
+  }
+
+  .col-side {
+    display: block;
+    margin-top: 12px;
+  }
+
+  .signature-card {
+    margin-top: 12px;
+  }
+
+  .card,
+  .summary-card,
+  .signature-card {
+    box-shadow: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .field input,
+  .field select,
+  .cell-input,
+  .dp-controls select,
+  .dp-custom input,
+  .ppn-rate input {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .table-wrap {
+    overflow: visible;
+  }
+
+  .items-table {
+    min-width: 0;
+  }
+
+  .items-table th {
+    background: #f4f5fb !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .grand,
+  .brand-logo,
+  .summary-icon,
+  .card-icon,
+  .sig-label,
+  .terbilang,
+  .sisa {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sig-space {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .sig-space svg,
+  .sig-space span {
+    display: none;
+  }
+
+  .sig-group {
+    background: #fff;
+  }
+
+  .page-footer {
+    display: none;
+  }
+}
+
+/* ---------- Field nomor memo dengan tombol generate ---------- */
+.input-affix {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input-affix input {
+  flex: 1;
+}
+
+.input-affix .affix-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-2);
+  background: #fbfcff;
+  border-radius: 10px;
+  color: var(--text-2);
+  flex: none;
+}
+
+.input-affix .affix-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+/* ---------- Kirim ke Google Sheet ---------- */
+.btn-sheet {
+  background: linear-gradient(135deg, #16a34a, #059669);
+  color: #fff;
+  box-shadow: 0 10px 18px -10px rgba(5, 150, 105, 0.65);
+}
+
+.btn-sheet:hover {
+  filter: brightness(1.06);
+}
+
+.gear-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-2);
+  background: #fff;
+  border-radius: 11px;
+  color: var(--text-2);
+}
+
+.gear-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.save-hint.sheet-pending {
+  color: var(--amber);
+  background: var(--amber-soft);
+  border-color: #fde68a;
+}
+
+.save-hint.sheet-error {
+  color: var(--red);
+  background: #fef2f2;
+  border-color: #fecaca;
+  cursor: pointer;
+}
+
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(15, 23, 42, 0.62);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.sheet-modal {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 40px 90px -30px rgba(15, 23, 42, 0.6);
+}
+
+.sheet-modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom: 1px solid var(--border);
+}
+
+.sheet-modal-title {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+
+.sheet-modal-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #16a34a, #059669);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.sheet-modal-title strong {
+  display: block;
+  font-size: 15px;
+}
+
+.sheet-modal-title span {
+  display: block;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.sheet-modal-body {
+  padding: 18px 20px 22px;
+  display: grid;
+  gap: 14px;
+}
+
+.sheet-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.sheet-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--red);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.sheet-test-result {
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.sheet-test-result.ok {
+  background: var(--green-soft);
+  border: 1px solid #c9f0dd;
+  color: var(--green);
+}
+
+.sheet-test-result.err {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--red);
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sheet-steps {
+  background: #f7f8ff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.sheet-steps ol {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+}
+
+.sheet-script {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sheet-script-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  background: #f8f9ff;
+  border-bottom: 1px solid var(--border);
+}
+
+.sheet-script-head span {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.sheet-script pre {
+  margin: 0;
+  max-height: 280px;
+  overflow: auto;
+  padding: 12px 14px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.55;
+  color: #334155;
+  background: #fcfcff;
+}
+
+
+
+
+
+
