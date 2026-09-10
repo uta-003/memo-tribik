@@ -104,7 +104,7 @@ export default function SummaryCard({
       </div>
 
       <div className="grand">
-        <span>Grand Total</span>
+        <span>GRAND TOTAL</span>
         <strong>{formatRupiah(grandTotal)}</strong>
       </div>
 

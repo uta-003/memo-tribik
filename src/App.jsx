@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useRef, useState } from 'react'
 import MemoInfoForm from './components/MemoInfoForm.jsx'
 import ItemsTable from './components/ItemsTable.jsx'
 import SummaryCard from './components/SummaryCard.jsx'
@@ -9,13 +9,15 @@ import SheetSettings from './components/SheetSettings.jsx'
 import Icon from './components/icons.jsx'
 import { formatTanggalID, todayISO, uid } from './utils/format.js'
 import { terbilangRupiah } from './utils/terbilang.js'
-import { nextNomorMemo } from './utils/memoNumber.js'
+import { nextNomorMemo, periodeNomor } from './utils/memoNumber.js'
 import { kirimKeSheet } from './utils/gsheet.js'
 
 const STORAGE_KEY = 'memo-pembayaran-draft-v1'
 const SHEET_URL_KEY = 'memo-pembayaran-gsheet-url-v1'
+const DEFAULT_SHEET_URL =
+  'https://script.google.com/macros/s/AKfycbzR-xu-Xa6QrhyKmP7Wintjp2FLemk0rF66hUoPmRBl1jw6t-qZsS9UxOY3Z9frni1a0A/exec'
 
-// Nomor memo pertama per sesi halaman — di-cache agar aman dari
+// Nomor memo pertama per sesi halaman  di-cache agar aman dari
 // double-invoke useState initializer (React StrictMode).
 let nomorAwalTercache = null
 function nomorAwal() {
@@ -33,6 +35,7 @@ function normMembers(arr, n) {
     jabatan: arr?.[i]?.jabatan || '',
   }))
 }
+
 
 function stateDefault() {
   return {
@@ -94,11 +97,11 @@ export default function App() {
   const [savedAt, setSavedAt] = useState(null)
   const [showPrint, setShowPrint] = useState(false)
   const [sheetUrl, setSheetUrl] = useState(() => {
-    if (typeof window === 'undefined') return ''
+    if (typeof window === 'undefined') return DEFAULT_SHEET_URL
     try {
-      return window.localStorage.getItem(SHEET_URL_KEY) || ''
+      return window.localStorage.getItem(SHEET_URL_KEY) || DEFAULT_SHEET_URL
     } catch {
-      return ''
+      return DEFAULT_SHEET_URL
     }
   })
   const [showSheet, setShowSheet] = useState(false)
@@ -118,11 +121,50 @@ export default function App() {
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
         setSavedAt(new Date())
       } catch {
-        /* penyimpanan tidak tersedia — abaikan */
+        /* penyimpanan tidak tersedia  abaikan */
       }
     }, 400)
     return () => clearTimeout(t)
   }, [state])
+
+  // ----- Sinkronisasi otomatis tanggal & nomor memo -----
+  // Jika aplikasi dibiarkan terbuka melewati pergantian hari/bulan/tahun,
+   // tanggal form ikut diperbarui ke hari ini; nomor memo otomatis digenerate
+   // ulang saat periode (tahun-bulan) berubah (no. urut reset ke 001).
+  // Pemicu: interval 30 detik + saat tab kembali fokus/terlihat.
+  const lastAutoDateRef = useRef(null)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    // Acuan sinkron: tanggal yang sedang tampil di form saat dimuat
+    // (draft lama dengan tanggal kemarin/bulan lalu akan langsung tersinkron;
+    //  backdate manual di hari yang sama tetap dihormati hinggu hari berganti).
+    lastAutoDateRef.current = form.tanggal || todayISO()
+    const sync = () => {
+      const t = todayISO()
+      if (lastAutoDateRef.current === t) return
+      lastAutoDateRef.current = t
+      setState((prev) => {
+        const now = new Date()
+        let nomor = prev.form.nomor
+        const p = periodeNomor(nomor)
+        if (!p || p.tahun !== now.getFullYear() || p.bulan !== now.getMonth() + 1) {
+          nomor = nextNomorMemo()
+        }
+        return { ...prev, form: { ...prev.form, tanggal: t, nomor } }
+      })
+    }
+    const id = setInterval(sync, 30000)
+    const onFocus = () => sync()
+    const onVis = () => { if (!document.hidden) sync() }
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      clearInterval(id)
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // ----- Kalkulasi otomatis -----
   const subtotal = useMemo(
@@ -169,12 +211,12 @@ export default function App() {
       if (clean) window.localStorage.setItem(SHEET_URL_KEY, clean)
       else window.localStorage.removeItem(SHEET_URL_KEY)
     } catch {
-      /* penyimpanan tidak tersedia — URL tetap dipakai sesi ini */
+      /* penyimpanan tidak tersedia  URL tetap dipakai sesi ini */
     }
   }
 
   const kirimKeSheetSekarang = async (url) => {
-    setSheetState({ status: 'sending', message: 'Mengirim…' })
+    setSheetState({ status: 'sending', message: 'Mengirim' })
     try {
       const payload = {
         memo: {
@@ -224,13 +266,134 @@ export default function App() {
     kirimKeSheetSekarang(sheetUrl)
   }
 
+  // ---------- Unduh PDF (menghasilkan berkas .pdf) ----------
+  const [pdfBusy, setPdfBusy] = useState(false)
+
+  const handleUnduhPdfFile = async () => {
+    const src = document.querySelector(".print-root.open .doc-page") || document.querySelector(".doc-page")
+    if (!src) return
+    setPdfBusy(true)
+    let host = null
+    try {
+      if (document.fonts && document.fonts.ready) await document.fonts.ready
+      const [{ default: html2canvas }, jspdfMod] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ])
+      const jsPDF = jspdfMod.jsPDF || jspdfMod.default
+
+      // Clone dokumen ke host normal-flow (top-left 0,0) agar posisi terhitung benar
+      host = document.createElement("div")
+      host.className = "pdf-export-host"
+      const clone = src.cloneNode(true)
+      clone.classList.add("pdf-export")
+      host.appendChild(clone)
+      document.body.appendChild(host)
+
+      // Render seluruh dokumen jadi satu gambar tajam
+      const canvas = await html2canvas(clone, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+      })
+
+      // Pas ke A4: lebar dokumen dipetakan ke lebar konten A4,
+      // tinggi tiap halaman dihitung presisi dari skala tersebut
+      const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait", compress: true })
+      const pageW = 210
+      const pageH = 297
+      const marginX = 10
+      const marginTop = 10
+      const marginBottom = 10
+      const contentW = pageW - marginX * 2
+      const contentH = pageH - marginTop - marginBottom
+      const pxPerMm = canvas.width / contentW
+      const pageContentPx = contentH * pxPerMm
+
+      // Kandidat posisi gunting: batas bawah blok utama & baris tabel
+      const cloneRect = clone.getBoundingClientRect()
+      const ratio = canvas.height / cloneRect.height
+      const selectors = [
+        "tr",
+        ".doc-head",
+        ".doc-accent",
+        ".doc-info",
+        ".doc-sum-row",
+        ".doc-terbilang",
+        ".doc-sign-group",
+        ".doc-foot",
+      ]
+      const cand = new Set([canvas.height])
+      selectors.forEach((s) => {
+        clone.querySelectorAll(s).forEach((b) => {
+          const r = b.getBoundingClientRect()
+          cand.add(Math.round((r.bottom - cloneRect.top) * ratio))
+        })
+      })
+      const sortedCuts = Array.from(cand).sort((a, b) => a - b)
+
+      // Pilih posisi gunting: kandidat terbesar yang masih muat di halaman aktif
+      const pageStarts = []
+      let y = 0
+      while (y < canvas.height - 2) {
+        const limit = y + pageContentPx
+        if (limit >= canvas.height - 2) {
+          pageStarts.push(y)
+          y = canvas.height
+          break
+        }
+        let best = limit
+        for (const c of sortedCuts) {
+          if (c > y + 20 && c <= limit) best = c
+        }
+        if (best <= y) best = limit
+        pageStarts.push(y)
+        y = best
+      }
+      if (pageStarts.length === 0) pageStarts.push(0)
+      if (pageStarts.length > 1 && canvas.height - pageStarts[pageStarts.length - 1] < 40) {
+        pageStarts.pop()
+      }
+
+      // Gambar tiap potongan ke halaman A4
+      for (let i = 0; i < pageStarts.length; i++) {
+        const startY = pageStarts[i]
+        const endY = i + 1 < pageStarts.length ? pageStarts[i + 1] : canvas.height
+        const sliceH = endY - startY
+        const slice = document.createElement("canvas")
+        slice.width = canvas.width
+        slice.height = sliceH
+        const ctx = slice.getContext("2d")
+        ctx.fillStyle = "#ffffff"
+        ctx.fillRect(0, 0, slice.width, slice.height)
+        ctx.drawImage(canvas, 0, startY, canvas.width, sliceH, 0, 0, canvas.width, sliceH)
+        const img = slice.toDataURL("image/jpeg", 0.95)
+        if (i > 0) pdf.addPage()
+        pdf.addImage(img, "JPEG", marginX, marginTop, contentW, sliceH / pxPerMm, undefined, "FAST")
+      }
+
+      const safeNomor = String(form.nomor || "memo").replace(/[^A-Za-z0-9-]/g, "-") || "memo"
+      pdf.save(`Memo-${safeNomor}.pdf`)
+    } catch (err) {
+      window.alert("Gagal membuat PDF: " + ((err && err.message) || err))
+    } finally {
+      if (host && host.parentNode) host.parentNode.removeChild(host)
+      setPdfBusy(false)
+    }
+  }
+
   return (
     <>
       <div className="app">
       <header className="app-bar">
         <div className="container-wide app-bar-inner">
           <div className="brand">
-            <span className="brand-logo"><Icon name="doc" size={20} /></span>
+            <span className="brand-logo">
+              <img src="/tribik-logo.png" alt="PT Balai Lelang Tribik" className="brand-logo-img" />
+            </span>
             <div className="brand-text">
               <h1>Memo Pembayaran</h1>
               <p>PT Balai Lelang Tribik</p>
@@ -248,7 +411,7 @@ export default function App() {
             )}
             {sheetState.status === 'sending' && (
               <span className="save-hint sheet-pending">
-                <Icon name="send" size={13} /> Mengirim ke Sheet…
+                <Icon name="send" size={13} /> Mengirim ke Sheet
               </span>
             )}
             {sheetState.status === 'ok' && (
@@ -263,7 +426,7 @@ export default function App() {
                 onClick={() => setShowSheet(true)}
                 title={sheetState.message}
               >
-                <Icon name="x" size={13} /> Gagal kirim — klik untuk detail
+                <Icon name="x" size={13} /> Gagal kirim  klik untuk detail
               </button>
             )}
             <button type="button" className="btn btn-sheet" onClick={handleKirimSheet}>
@@ -310,7 +473,7 @@ export default function App() {
                 <span className="card-icon"><Icon name="list" size={16} /></span>
                 <div>
                   <h2>Rincian Pengeluaran</h2>
-                  <p>Tambahkan item sesuai kebutuhan — total dihitung otomatis</p>
+                  <p>Tambahkan item sesuai kebutuhan  total dihitung otomatis</p>
                 </div>
               </header>
               <ItemsTable
@@ -361,8 +524,8 @@ export default function App() {
       </main>
 
       <footer className="page-footer no-print">
-        <span>Memo Pembayaran • PT Balai Lelang Tribik</span>
-        <span className="page-footer-copy">2026 © E. Nugraha Wicaksono. All Rights Reserved.</span>
+        <span>Memo Pembayaran PT Balai Lelang Tribik</span>
+        <span className="page-footer-copy">2026  E. Nugraha Wicaksono. All Rights Reserved.</span>
       </footer>
       </div>
 
@@ -371,7 +534,12 @@ export default function App() {
         {showPrint && (
           <PrintModal
             onClose={() => setShowPrint(false)}
-            onDownload={() => window.print()}
+            onDownload={handleUnduhPdfFile}
+            onPrint={() => window.print()}
+            pdfBusy={pdfBusy}
+            isInclude={ppnMode === 'include'}
+            showPpnBreakdown={showPpnBreakdown}
+            onTogglePpnBreakdown={(v) => patch({ showPpnBreakdown: v })}
           />
         )}
         <div
@@ -417,4 +585,3 @@ export default function App() {
     </>
   )
 }
-

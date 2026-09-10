@@ -20,6 +20,19 @@ export function formatNomorMemo(tanggal, urut) {
   return `TRB/${tahun}/${roman}/${noUrut}`
 }
 
+const ROMAWI_PERIODE = [
+  'I', 'II', 'III', 'IV', 'V', 'VI',
+  'VII', 'VIII', 'IX', 'X', 'XI', 'XII',
+]
+
+// Ambil periode (tahun-bulan) dari nomor memo "TRB/2026/VIII/001".
+// Kembalikan null bila format tidak dikenali (tidak valid / kosong).
+export function periodeNomor(nomor) {
+  const m = /^TRB\/(\d{4})\/([IVXLC]+)\/(\d{3})$/.exec(String(nomor || '').trim())
+  if (!m) return null
+  return { tahun: Number(m[1]), bulan: ROMAWI_PERIODE.indexOf(m[2]) + 1 }
+}
+
 // Kunci bulan berjalan: "2026-08" — berganti tiap awal bulan → penghitung reset
 function kunciBulan(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`

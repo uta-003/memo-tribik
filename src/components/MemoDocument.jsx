@@ -1,4 +1,3 @@
-import Icon from './icons.jsx'
 import { formatRupiah, formatTanggalID } from '../utils/format.js'
 
 const strip = (v) => (typeof v === 'string' && v.trim() ? v.trim() : '')
@@ -48,7 +47,9 @@ export default function MemoDocument({
       {/* Kop dokumen */}
       <header className="doc-head">
         <div className="doc-brand">
-          <span className="doc-logo"><Icon name="doc" size={22} /></span>
+          <span className="doc-logo">
+            <img src="/tribik-logo.png" alt="PT Balai Lelang Tribik" className="doc-logo-img" />
+          </span>
           <div>
             <h1>Memo Pembayaran</h1>
             <p>PT Balai Lelang Tribik</p>
@@ -68,15 +69,17 @@ export default function MemoDocument({
       <div className="doc-accent" />
 
       {/* Data utama */}
-      <section className="doc-info">
+      <section className={`doc-info${isInclude && !showPpnBreakdown ? ' doc-info-no-ppn' : ''}`}>
         <InfoItem wide label="Dibayar Kepada" value={strip(form.dibayarKe) || '—'} />
         <InfoItem label="No. Rek / VA" value={strip(form.noRek) || '—'} />
         <InfoItem label="Nama Bank" value={strip(form.namaBank) || '—'} />
         <InfoItem label="Divisi" value={strip(form.divisi) || '—'} />
-        <InfoItem
-          label="PPN"
-          value={`${ppnPercent}% — ${isInclude ? 'sudah termasuk' : 'ditambahkan'}`}
-        />
+        {(!isInclude || showPpnBreakdown) && (
+          <InfoItem
+            label="PPN"
+            value={`${ppnPercent}% — ${isInclude ? 'sudah termasuk' : 'ditambahkan'}`}
+          />
+        )}
       </section>
 
       {/* Tabel rincian */}
@@ -105,6 +108,10 @@ export default function MemoDocument({
           <tr>
             <td colSpan={4} className="lbl">Subtotal</td>
             <td className="num">{formatRupiah(subtotal)}</td>
+          </tr>
+          <tr className="grand-total-row">
+            <td colSpan={4} className="lbl">GRAND TOTAL</td>
+            <td className="num grand-total-num">{formatRupiah(grandTotal)}</td>
           </tr>
         </tfoot>
       </table>
@@ -139,10 +146,6 @@ export default function MemoDocument({
             <b>{formatRupiah(ppnAmount)}</b>
           </div>
         )}
-        <div className="doc-sum-row grand">
-          <span>Grand Total</span>
-          <b>{formatRupiah(grandTotal)}</b>
-        </div>
         {adaDp && (
           <div className="doc-sum-row">
             <span>DP {dpPercent}%</span>
@@ -163,36 +166,52 @@ export default function MemoDocument({
         <em>#{terbilang}#</em>
       </div>
 
-      {/* Tanda tangan */}
-      <section className="doc-sign">
-        <div className="doc-sign-date">
-          {strip(city) || 'Bekasi'}, {formatTanggalID(form.tanggal) || '—'}
-        </div>
-        <div className="doc-sign-grid">
-          {[
-            { label: 'Pemohon', key: 'pemohon' },
-            { label: 'Mengetahui', key: 'mengetahui' },
-            { label: 'Menyetujui', key: 'menyetujui' },
-          ].map((g) => (
-            <div className="doc-sign-group" key={g.key}>
-              <span className={`doc-sign-label doc-sign-${g.key}`}>{g.label}</span>
-              <div className={`doc-sign-members${signatures[g.key].length > 1 ? ' two' : ''}`}>
-                {signatures[g.key].map((m, i) => (
-                  <div className="doc-sign-member" key={i}>
-                    <div className="doc-sig-space" />
-                    <div className="doc-sig-name">
-                      {strip(m.nama) || '\u00A0'}
-                    </div>
-                    <div className="doc-sig-jabatan">
-                      {strip(m.jabatan) || '\u00A0'}
-                    </div>
-                  </div>
-                ))}
-              </div>
+      {/* Tanda tangan — grup/member yang kosong otomatis disembunyikan */}
+      {(() => {
+        const isFilled = (m) => strip(m.nama) !== '' || strip(m.jabatan) !== ''
+        const groups = [
+          { label: 'Pemohon', key: 'pemohon' },
+          { label: 'Mengetahui', key: 'mengetahui' },
+          { label: 'Menyetujui', key: 'menyetujui' },
+        ]
+          .map((g) => ({ ...g, members: signatures[g.key].filter(isFilled) }))
+          .filter((g) => g.members.length > 0)
+        if (groups.length === 0) return null
+        let gridCols = '1fr'
+        if (groups.length === 3) gridCols = '0.78fr 1.11fr 1.11fr'
+        else if (groups.length === 2) {
+          gridCols = groups.some((g) => g.key === 'pemohon')
+            ? '0.78fr 1.22fr'
+            : '1fr 1fr'
+        }
+        return (
+          <section className="doc-sign">
+            <div className="doc-sign-date">
+              {strip(city) || 'Bekasi'}, {formatTanggalID(form.tanggal) || '—'}
             </div>
-          ))}
-        </div>
-      </section>
+            <div className="doc-sign-grid" style={{ gridTemplateColumns: gridCols }}>
+              {groups.map((g) => (
+                <div className="doc-sign-group" key={g.key}>
+                  <span className={`doc-sign-label doc-sign-${g.key}`}>{g.label}</span>
+                  <div className={`doc-sign-members${g.members.length > 1 ? ' two' : ''}`}>
+                    {g.members.map((m, i) => (
+                      <div className="doc-sign-member" key={i}>
+                        <div className="doc-sig-space" />
+                        <div className="doc-sig-name">
+                          {strip(m.nama) || '\u00A0'}
+                        </div>
+                        <div className="doc-sig-jabatan">
+                          {strip(m.jabatan) || '\u00A0'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      })()}
 
       {/* Kaki dokumen */}
       <footer className="doc-foot">

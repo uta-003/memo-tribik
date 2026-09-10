@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    Dokumen PDF (A4), modal pratinjau, dan aturan cetak
    ============================================================ */
 
@@ -44,9 +44,9 @@
 .print-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.62);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  background: linear-gradient(160deg, rgba(23, 32, 58, 0.78), rgba(17, 20, 34, 0.82) 55%, rgba(88, 0, 1, 0.62));
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
 }
 
 .print-toolbar {
@@ -79,6 +79,7 @@
   width: 38px;
   height: 38px;
   border-radius: 11px;
+  background: #b60001; /* fallback solid jika gradien tak ter-render */
   background: linear-gradient(135deg, var(--primary), var(--primary-2));
   color: #fff;
   display: grid;
@@ -100,6 +101,13 @@
 .print-toolbar-actions {
   display: flex;
   gap: 10px;
+}
+
+.print-toolbar-actions .btn-ghost.active {
+
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .print-scroll {
@@ -160,14 +168,25 @@ body.modal-open {
 }
 
 .doc-logo {
-  width: 46px;
   height: 46px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  color: #fff;
+  width: auto;
+  aspect-ratio: 404 / 190;
+  border-radius: 6px;
   display: grid;
   place-items: center;
   flex: none;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 14px -8px rgba(182, 0, 1, 0.45);
+  overflow: hidden;
+}
+
+.doc-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .doc-brand h1 {
@@ -361,23 +380,19 @@ body.modal-open {
 }
 
 .doc-sum-row.grand {
-  margin-top: 4px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  color: #fff;
-  padding: 8px 12px;
+  margin-top: 6px;
+  padding: 5px 12px;
 }
 
 .doc-sum-row.grand span {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 9.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  color: #17203a;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .doc-sum-row.grand b {
-  color: #fff;
-  font-size: 14px;
+  color: #17203a;
+  font-size: 13.5px;
   font-weight: 800;
 }
 
@@ -630,3 +645,319 @@ body.modal-open {
 
 
 
+
+/* ============================================================
+   Polesan Pratinjau Unduh PDF (kekinian & menarik)
+   ============================================================ */
+
+/* --- Overlay --- */
+.print-backdrop {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(23, 32, 58, 0.78), rgba(17, 20, 34, 0.82) 55%, rgba(88, 0, 1, 0.62));
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+/* --- Toolbar melayang ala floating glass --- */
+.print-toolbar {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(980px, calc(100% - 36px));
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-top-color: rgba(182, 0, 1, 0.25);
+  border-radius: 18px;
+  box-shadow:
+    0 22px 55px -22px rgba(15, 23, 42, 0.6),
+    0 0 0 1px rgba(15, 23, 42, 0.06),
+    0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.print-toolbar-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: #b60001;
+  background: linear-gradient(135deg, #c20001, #7f0001);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex: none;
+  box-shadow: 0 10px 22px -10px rgba(182, 0, 1, 0.7);
+}
+
+.print-toolbar-info strong {
+  font-size: 14.5px;
+  letter-spacing: -0.01em;
+}
+
+.print-toolbar-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.print-toolbar-actions .btn {
+  border-radius: 999px;
+  font-weight: 600;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.print-toolbar-actions .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -12px rgba(15, 23, 42, 0.45);
+}
+
+.print-toolbar-actions .btn-ghost.active {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* --- Animasi masuk pratinjau --- */
+.print-root.open .print-toolbar {
+  animation: printFadeIn 0.28s ease;
+}
+
+.print-root.open .doc-page {
+  animation: printFadeUp 0.4s cubic-bezier(0.2, 0.8,  0.3, 1);
+}
+
+@keyframes printFadeIn {
+  from { opacity:  0; }
+  to { opacity: 1; }
+}
+
+@keyframes printFadeUp {
+  from { opacity:  0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- Halaman dokumen: aksen halus --- */
+.doc-page {
+  position: relative;
+  width: 210mm;
+  min-height: calc(297mm - 10mm);
+  margin: 0 auto;
+  background:
+    radial-gradient(620px 260px at 100% 0%, rgba(182, 0, 1, 0.05), transparent 58%),
+    radial-gradient(520px 240px at 0% 100%, rgba(212, 160, 23, 0.055), transparent 55%),
+    #fff;
+  border-radius: 14px;
+  box-shadow:
+    0 45px 90px -42px rgba(15, 23, 42, 0.65),
+    0 0 0 1px rgba(15, 23, 42, 0.07),
+    0 2px 10px rgba(15, 23, 42, 0.08);
+  padding: 13mm 14mm 12mm;
+  color: #17203a;
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+
+/* --- Kop & panel data --- */
+.doc-accent {
+  height: 6px;
+  box-shadow: 0 2px 10px -4px rgba(182, 0, 1, 0.5);
+}
+
+.doc-info {
+  background: linear-gradient(180deg, #fbfcff, #f3f5fd);
+  border-color: #e8ecf9;
+  border-radius: 14px;
+  box-shadow: inset  0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.doc-info-item strong {
+  font-weight: 650;
+}
+
+/* --- Tabel: header gradasi & baris berselang --- */
+.doc-table th {
+  background: linear-gradient(180deg, #f8f9ff, #eef1fc);
+  border-color: #e2e6f4;
+  padding: 7px 10px;
+  font-weight: 800;
+  color: #3d4766;
+}
+
+.doc-table td {
+  border-color: #e6eaf6;
+  padding: 6.5px 10px;
+}
+
+.doc-table tbody tr:nth-child(even) td {
+  background: #fafbff;
+}
+
+.doc-table tfoot td {
+  background: linear-gradient(180deg, #fbfcff, #f6f7fd);
+  border-top: 1.6px solid #17203a;
+}
+
+/* --- Ringkasan pembayaran: modern & menonjol --- */
+.doc-sum-row {
+  padding: 4px 12px;
+}
+
+.doc-sum-row.muted {
+  font-size: 10px;
+  padding-left: 14px;
+}
+
+.doc-sum-row.grand {
+  padding: 6px 14px;
+}
+
+.doc-sum-row.sisa {
+  background: linear-gradient(120deg, #ecfdf5, #dcf9ea);
+  border-color: #c2ecd7;
+}
+
+/* --- Terbilang: aksen khas --- */
+.doc-terbilang {
+  background: linear-gradient(180deg, #fef7f7, #fdf0f0);
+  border: 1.5px dashed #eccccc;
+  border-left: 4px solid var(--primary);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+/* --- Grup tanda tangan --- */
+.doc-sign-group {
+  background: linear-gradient(180deg, #fdfdff, #f7f8fe);
+  border-radius: 12px;
+  padding: 11px;
+}
+
+.doc-sig-space {
+  border:  1px dashed #e3e7f5;
+  border-radius:  8px;
+  background: #fff;
+}
+
+/* --- Layar kecil --- */
+@media (max-width: 760px) {
+  .print-toolbar { top:  8px; padding:  8px 12px; }
+  .print-scroll { top:  112px; }
+}
+
+/* --- Cetak: pertahankan polesan, matikan animasi --- */
+@media print {
+  .doc-page { background: #fff !important; position: relative !important; border-radius:  0 !important; box-shadow: none !important; }
+  .print-toolbar,
+  .print-backdrop { animation: none !important; }
+  .doc-page,
+  .print-toolbar { animation: none !important; }
+  .doc-info,
+  .doc-table th,
+  .doc-table tbody tr:nth-child(even) td,
+  .doc-table tfoot td,
+  .doc-table td,
+  .doc-sum-row.grand,
+  .doc-sum-row.sisa,
+  .doc-terbilang,
+  .doc-sign-group,
+  .doc-sig-space,
+  .doc-logo,
+  .doc-accent {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+
+
+/* Saat PPN disembunyikan: Nama Bank melebar, Divisi pindah ke posisi PPN (rapih tanpa lubang) */
+.doc-info-no-ppn .doc-info-item:nth-child(3) {
+  grid-column: 1 / span 2;
+}
+
+.doc-info-no-ppn .doc-info-item:nth-child(4) {
+  grid-column: 3;
+}
+
+.doc-brand h1 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.doc-brand p {
+  font-size: 10.5px;
+  color: var(--text-3);
+  font-weight: 600;
+  margin-top: 1px;
+  line-height: 1.25;
+}
+
+
+/* --- Mode ekspor PDF: clone dokumen ke host normal-flow (anti blank) --- */
+.pdf-export-host {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 210mm;
+  background: #fff;
+}
+
+.doc-page.pdf-export {
+  position: static !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  zoom: 1 !important;
+  min-height: 0 !important;
+  padding: 5mm 6mm !important;
+  background: #fff !important;
+}
+
+/* ===== GRAND TOTAL: TEKST SAJA, ZERO KOTAK (jamin penuh) ===== */
+.doc-sum-row.grand {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.doc-sum-row.grand span,
+.doc-sum-row.grand b {
+  background: transparent !important;
+  color: #17203a !important;
+}
+
+/* ===== GRAND TOTAL dibawah Subtotal (tfoot tabel)  teks saja ===== */
+.doc-table .grand-total-row td {
+  padding:  7px 10px;
+  font-size:  12px;
+  font-weight:  800;
+}
+
+.doc-table .grand-total-row .lbl {
+  color:  #17203a;
+  font-weight:  800;
+  text-transform:  none;
+  letter-spacing:  0.02em;
+}
+
+.doc-table .grand-total-row .grand-total-num {
+  color:  #17203a;
+  font-size:  13.5px;
+  font-weight:  800;
+  font-variant-numeric:  tabular-nums;
+}
