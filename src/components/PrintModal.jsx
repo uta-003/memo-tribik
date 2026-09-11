@@ -30,23 +30,9 @@ export default function PrintModal({
       <div className="print-toolbar no-print">
         <div className="print-toolbar-info">
           <span className="print-toolbar-icon">
-            <svg
-              width="17"
-              height="17"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#ffffff"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <path d="m7 10 5 5 5-5" />
-              <path d="M12 15V3" />
-            </svg>
+            <Icon name="download" size={20} />
           </span>
-          <div>
+          <div className="print-toolbar-text">
             <strong>Pratinjau Unduh PDF</strong>
             <span>
               Klik <b>Unduh PDF</b> lalu pilih tujuan <b>Save as PDF</b>, atau{" "}

@@ -508,7 +508,8 @@ export default function App() {
               <Icon name="info" size={14} />
               <span>
                 Draft tersimpan otomatis di browser. Klik <b>Unduh PDF</b> untuk
-                melihat pratinjau dan menyimpan memo sebagai PDF (siap A4).
+                melihat pratinjau dan jangan lupa klik kirim ke sheet untuk menyimpan
+                hasil kerja di gsheet.
               </span>
             </div>
           </aside>
