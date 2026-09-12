@@ -6,6 +6,18 @@ const GROUPS = [
   { key: 'menyetujui', label: 'Menyetujui' },
 ]
 
+export const JABATAN_OPTIONS = [
+  'IT & Marcom',
+  'KA. DIV HR, GA & IT Marcom',
+  'KA. DIV Marketing & Operasional',
+  'KA. DIV Accounting & Finance',
+  'Direktur',
+  'Head General Affair',
+  'Kapool Regional 1',
+  'Kapool Regional 2',
+  'Human Resources',
+]
+
 export default function SignatureSection({
   signatures,
   onChange,
@@ -55,7 +67,8 @@ export default function SignatureSection({
                     className="sig-jabatan"
                     value={m.jabatan}
                     onChange={(e) => update(g.key, i, 'jabatan', e.target.value)}
-                    placeholder="Jabatan"
+                    placeholder="Pilih / ketik jabatan"
+                    list="jabatan-options-global"
                   />
                 </div>
               ))}
@@ -63,6 +76,10 @@ export default function SignatureSection({
           </div>
         ))}
       </div>
+
+      <datalist id="jabatan-options-global">
+        {JABATAN_OPTIONS.map((j) => <option key={j} value={j} />)}
+      </datalist>
     </section>
   )
 }
