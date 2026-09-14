@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     // Pastikan dependensi ekspor PDF selalu di-pre-bundle (anti error dynamic import)
-    include: ['html2canvas', 'jspdf'],
+    include: ['html2canvas', 'jspdf', 'pdf-lib'],
   },
 })

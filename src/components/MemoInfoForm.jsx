@@ -93,6 +93,16 @@ export default function MemoInfoForm({ form, onChange, onGenerateNomor }) {
           {BANK_OPTIONS.map((b) => <option key={b} value={b} />)}
         </datalist>
       </div>
+
+      <div className="field">
+        <label htmlFor="f-cabang"><Icon name="bank" size={13} /> Cabang Bank</label>
+        <input
+          id="f-cabang"
+          value={form.cabangBank}
+          onChange={set('cabangBank')}
+          placeholder="Nama cabang / territori"
+        />
+      </div>
     </div>
   )
 }

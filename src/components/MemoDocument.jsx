@@ -28,6 +28,7 @@ export default function MemoDocument({
   dpNominal,
   sisa,
   terbilang,
+  attachments,
 }) {
   const isInclude = ppnMode === 'include'
   const adaDp = (Number(dpPercent) || 0) > 0
@@ -73,6 +74,7 @@ export default function MemoDocument({
         <InfoItem wide label="Dibayar Kepada" value={strip(form.dibayarKe) || '—'} />
         <InfoItem label="No. Rek / VA" value={strip(form.noRek) || '—'} />
         <InfoItem label="Nama Bank" value={strip(form.namaBank) || '—'} />
+        <InfoItem label="Cabang Bank" value={strip(form.cabangBank) || '—'} />
         <InfoItem label="Divisi" value={strip(form.divisi) || '—'} />
         {(!isInclude || showPpnBreakdown) && (
           <InfoItem
@@ -212,6 +214,18 @@ export default function MemoDocument({
           </section>
         )
       })()}
+
+      {/* Lampiran terdaftar (halaman lampiran menyusul setelah memo di PDF) */}
+      {attachments && attachments.length > 0 && (
+        <div className="doc-attach">
+          <span className="doc-attach-title">Lampiran ({attachments.length})</span>
+          <ol className="doc-attach-list">
+            {attachments.map((a) => (
+              <li key={a.id || a.name}>{a.name}</li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       {/* Kaki dokumen */}
       <footer className="doc-foot">

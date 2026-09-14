@@ -30,7 +30,7 @@ function getSS_() {
   return SpreadsheetApp.getActiveSpreadsheet();
 }
 
-const MEMO_HEADERS = ['Timestamp', 'Nomor Memo', 'Tanggal', 'Dibayar Kepada', 'No. Rek / VA', 'Nama Bank', 'Divisi', 'Subtotal (Rp)', 'Mode PPN', 'Tarif PPN (%)', 'PPN (Rp)', 'Grand Total (Rp)', 'DP (%)', 'DP (Rp)', 'Sisa Pembayaran (Rp)', 'Terbilang', 'Pemohon', 'Mengetahui 1', 'Mengetahui 2', 'Menyetujui 1', 'Menyetujui 2'];
+const MEMO_HEADERS = ['Timestamp', 'Nomor Memo', 'Tanggal', 'Dibayar Kepada', 'No. Rek / VA', 'Nama Bank', 'Cabang Bank', 'Divisi', 'Subtotal (Rp)', 'Mode PPN', 'Tarif PPN (%)', 'PPN (Rp)', 'Grand Total (Rp)', 'DP (%)', 'DP (Rp)', 'Sisa Pembayaran (Rp)', 'Terbilang', 'Pemohon', 'Mengetahui 1', 'Mengetahui 2', 'Menyetujui 1', 'Menyetujui 2', 'Lampiran'];
 const RINCIAN_HEADERS = ['Timestamp', 'Nomor Memo', 'Keterangan Pengeluaran', 'QTY', 'Harga Satuan (Rp)', 'Total (Rp)'];
 
 function doGet() {
@@ -73,7 +73,7 @@ function doPost(e) {
       return [nama, jabatan].filter(Boolean).join(' - ');
     };
 
-    const memoRow = [now, nomor, memo.tanggal ? new Date(memo.tanggal) : '', memo.dibayarKe, memo.noRek, memo.namaBank, memo.divisi, toNum_(memo.subtotal), memo.ppnMode, toNum_(memo.ppnPercent), toNum_(memo.ppnAmount), toNum_(memo.grandTotal), toNum_(memo.dpPercent), toNum_(memo.dpNominal), toNum_(memo.sisa), memo.terbilang, sig('pemohon', 0), sig('mengetahui', 0), sig('mengetahui', 1), sig('menyetujui', 0), sig('menyetujui', 1)];
+    const memoRow = [now, nomor, memo.tanggal ? new Date(memo.tanggal) : '', memo.dibayarKe, memo.noRek, memo.namaBank, memo.cabangBank, memo.divisi, toNum_(memo.subtotal), memo.ppnMode, toNum_(memo.ppnPercent), toNum_(memo.ppnAmount), toNum_(memo.grandTotal), toNum_(memo.dpPercent), toNum_(memo.dpNominal), toNum_(memo.sisa), memo.terbilang, sig('pemohon', 0), sig('mengetahui', 0), sig('mengetahui', 1), sig('menyetujui', 0), sig('menyetujui', 1), memo.lampiran];
 
     const rowLama = cariBaris_(memoSheet, 'Nomor Memo', nomor);
     if (rowLama > 0) {

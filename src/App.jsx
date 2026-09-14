@@ -3,6 +3,7 @@ import MemoInfoForm from './components/MemoInfoForm.jsx'
 import ItemsTable from './components/ItemsTable.jsx'
 import SummaryCard from './components/SummaryCard.jsx'
 import SignatureSection from './components/SignatureSection.jsx'
+import AttachmentsSection from './components/AttachmentsSection.jsx'
 import MemoDocument from './components/MemoDocument.jsx'
 import PrintModal from './components/PrintModal.jsx'
 import SheetSettings from './components/SheetSettings.jsx'
@@ -46,8 +47,10 @@ function stateDefault() {
       tanggal: todayISO(),
       divisi: '',
       namaBank: '',
+      cabangBank: '',
     },
     items: [buatBaris()],
+    attachments: [],
     ppnMode: 'exclude',
     ppnPercent: 11,
     showPpnBreakdown: true,
@@ -75,6 +78,9 @@ function muatDraft() {
       ...data,
       form: { ...base.form, ...(data.form || {}) },
       items: data.items.map((it) => ({ ...buatBaris(), ...it })),
+      attachments: Array.isArray(data.attachments)
+        ? data.attachments.filter((a) => a && a.dataUrl)
+        : [],
       signatures: {
         pemohon: normMembers(data.signatures?.pemohon, 1),
         mengetahui: normMembers(data.signatures?.mengetahui, 2),
@@ -109,7 +115,7 @@ export default function App() {
   const [sheetState, setSheetState] = useState({ status: 'idle', message: '' })
   const {
     form, items, ppnMode, ppnPercent, dpPercent, dpCustom, signatures, city,
-    showPpnBreakdown,
+    showPpnBreakdown, attachments,
   } = state
 
   const patch = (partial) => setState((s) => ({ ...s, ...partial }))
@@ -118,7 +124,19 @@ export default function App() {
   useEffect(() => {
     const t = setTimeout(() => {
       try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+        // Simpan metadata lampiran saja (nama/tipe) — data URL gambar bisa sangat
+        // besar sehingga berisiko melampaui kuota localStorage dan menggagalkan
+        // penyimpanan seluruh draft. Gambar tetap utuh untuk sesi ini di state.
+        const toSave = {
+          ...state,
+          attachments: state.attachments.map((a) => ({
+            id: a.id,
+            name: a.name,
+            type: a.type,
+            size: a.size,
+          })),
+        }
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave))
         setSavedAt(new Date())
       } catch {
         /* penyimpanan tidak tersedia  abaikan */
@@ -225,6 +243,7 @@ export default function App() {
           dibayarKe: form.dibayarKe,
           noRek: form.noRek,
           namaBank: form.namaBank,
+          cabangBank: form.cabangBank,
           divisi: form.divisi,
           subtotal,
           ppnMode,
@@ -236,6 +255,7 @@ export default function App() {
           sisa,
           terbilang: kataTerbilang,
           signatures,
+          lampiran: attachments.map((a) => a.name).join('; '),
         },
         items: items.map((it) => ({
           keterangan: it.keterangan,
@@ -376,7 +396,62 @@ export default function App() {
       }
 
       const safeNomor = String(form.nomor || "memo").replace(/[^A-Za-z0-9-]/g, "-") || "memo"
-      pdf.save(`Memo-${safeNomor}.pdf`)
+      const namaFile = `Memo-${safeNomor}.pdf`
+
+      const lampiranAktif = (attachments || []).filter((a) => a && a.dataUrl)
+      if (lampiranAktif.length === 0) {
+        pdf.save(namaFile)
+        return
+      }
+
+      // --- Gabung memo + lampiran menjadi satu PDF (pdf-lib) ---
+      const { PDFDocument } = await import("pdf-lib")
+      const memoBytes = pdf.output("arraybuffer")
+      const finalDoc = await PDFDocument.load(memoBytes)
+
+      const A4W = 595.28 // A4 dalam satuan titik (pt)
+      const A4H = 841.89
+      const pad = 32
+
+      for (const att of lampiranAktif) {
+        const b64 = String(att.dataUrl).split(",")[1] || ""
+        const bin = atob(b64)
+        const bytes = new Uint8Array(bin.length)
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
+
+        if (att.type === "application/pdf") {
+          const srcPdf = await PDFDocument.load(bytes, { ignoreEncryption: true })
+          const pages = await finalDoc.copyPages(srcPdf, srcPdf.getPageIndices())
+          pages.forEach((p) => finalDoc.addPage(p))
+          continue
+        }
+
+        // Gambar: pas ke halaman A4 baru dengan margin, jaga proporsi
+        let img
+        try {
+          img = await finalDoc.embedPng(bytes)
+        } catch {
+          try {
+            img = await finalDoc.embedJpg(bytes)
+          } catch {
+            continue // format tidak didukung
+          }
+        }
+        const page = finalDoc.addPage([A4W, A4H])
+        const scale = Math.min((A4W - pad * 2) / img.width, (A4H - pad * 2) / img.height)
+        const w = img.width * scale
+        const h = img.height * scale
+        page.drawImage(img, { x: (A4W - w) / 2, y: (A4H - h) / 2, width: w, height: h })
+      }
+
+      const outBytes = await finalDoc.save()
+      const blob = new Blob([outBytes], { type: "application/pdf" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = namaFile
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(url), 10000)
     } catch (err) {
       window.alert("Gagal membuat PDF: " + ((err && err.message) || err))
     } finally {
@@ -482,6 +557,20 @@ export default function App() {
                 subtotal={subtotal}
               />
             </section>
+
+            <section className="card">
+              <header className="card-head">
+                <span className="card-icon"><Icon name="paperclip" size={16} /></span>
+                <div>
+                  <h2>Lampiran</h2>
+                  <p>Maksimal 5 berkas  digabung otomatis ke PDF memo</p>
+                </div>
+              </header>
+              <AttachmentsSection
+                attachments={attachments}
+                onChange={(next) => patch({ attachments: next })}
+              />
+            </section>
           </div>
 
           <aside className="col-side">
@@ -565,6 +654,7 @@ export default function App() {
             dpNominal={dpNominal}
             sisa={sisa}
             terbilang={kataTerbilang}
+            attachments={attachments}
           />
         </div>
       </div>

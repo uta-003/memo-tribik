@@ -853,6 +853,37 @@ body.modal-open {
   padding: 10px 14px;
 }
 
+/* --- Lampiran (terdaftar di dokumen memo) --- */
+.doc-attach {
+  background: linear-gradient(180deg, #fefefe, #f8f9ff);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 12px 0;
+}
+
+.doc-attach-title {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-2);
+  margin-bottom: 6px;
+}
+
+.doc-attach-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 10.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.doc-attach-list li {
+  overflow-wrap: anywhere;
+}
+
 /* --- Grup tanda tangan --- */
 .doc-sign-group {
   background: linear-gradient(180deg, #fdfdff, #f7f8fe);
