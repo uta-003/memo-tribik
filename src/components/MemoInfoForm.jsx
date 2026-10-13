@@ -103,6 +103,26 @@ export default function MemoInfoForm({ form, onChange, onGenerateNomor }) {
           placeholder="Nama cabang / territori"
         />
       </div>
+
+      <div className="field">
+        <label htmlFor="f-cabang-kantor"><Icon name="list" size={13} /> Pool Cabang</label>
+        <input
+          id="f-cabang-kantor"
+          value={form.cabang}
+          onChange={set('cabang')}
+          placeholder="Nama pool cabang / kota"
+        />
+      </div>
+
+      <div className="field">
+        <label htmlFor="f-jenis"><Icon name="list" size={13} /> Jenis Pekerjaan</label>
+        <input
+          id="f-jenis"
+          value={form.jenisPekerjaan}
+          onChange={set('jenisPekerjaan')}
+          placeholder="Jenis pekerjaan"
+        />
+      </div>
     </div>
   )
 }

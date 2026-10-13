@@ -75,6 +75,8 @@ export default function MemoDocument({
         <InfoItem label="No. Rek / VA" value={strip(form.noRek) || '—'} />
         <InfoItem label="Nama Bank" value={strip(form.namaBank) || '—'} />
         <InfoItem label="Cabang Bank" value={strip(form.cabangBank) || '—'} />
+        <InfoItem label="Pool Cabang" value={strip(form.cabang) || '—'} />
+        <InfoItem label="Jenis Pekerjaan" value={strip(form.jenisPekerjaan) || '—'} />
         <InfoItem label="Divisi" value={strip(form.divisi) || '—'} />
         {(!isInclude || showPpnBreakdown) && (
           <InfoItem
